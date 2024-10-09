@@ -3,30 +3,32 @@ pragma solidity ^0.8.23;
 
 import "forge-std/Script.sol";
 import {CoopTimedSaleStrategyImpl} from "../src/CoopTimedSaleStrategyImpl.sol";
+import {CoopTimedSaleStrategy} from "../src/CoopTimedSaleStrategy.sol";
 import {IProtocolRewards} from "@zoralabs/protocol-rewards/src/interfaces/IProtocolRewards.sol";
+import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 
 contract DeployCoopTimedSaleStrategyImpl is Script {
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address defaultOwner = vm.envAddress("DEFAULT_OWNER");
-        address zoraRewardRecipient = vm.envAddress("ZORA_REWARD_RECIPIENT");
-        address erc20zImpl = vm.envAddress("ERC20Z_IMPL_ADDRESS");
-        address protocolRewardsAddress = vm.envAddress(
-            "PROTOCOL_REWARDS_ADDRESS"
-        );
+        address defaultOwner = 0x9266F125fb2EcB730D9953b46dE9C32e2Fa83E4a;
+        address zoraRewardRecipient = 0x9266F125fb2EcB730D9953b46dE9C32e2Fa83E4a;
+        address erc20zImpl = 0x6E742921602a5195f6439c8b8b827E85902E1B2D;
+        address protocolRewardsAddress = 0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B;
 
-        vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast();
 
+        // Deploy implementation
         CoopTimedSaleStrategyImpl impl = new CoopTimedSaleStrategyImpl();
 
-        // impl.initialize(
-        //     defaultOwner,
-        //     zoraRewardRecipient,
-        //     erc20zImpl,
-        //     IProtocolRewards(protocolRewardsAddress)
-        // );
+        // Deploy ProxyAdmin
+        CoopTimedSaleStrategy proxyAdmin = new CoopTimedSaleStrategy(address(impl));
 
-        console.log("CoopTimedSaleStrategyImpl deployed at:", address(impl));
+        // Initialize the Minter Proxy
+        CoopTimedSaleStrategyImpl(address(proxyAdmin)).initialize(
+            defaultOwner, zoraRewardRecipient, erc20zImpl, IProtocolRewards(protocolRewardsAddress)
+        );
+
+        console.log("CoopTimedSaleStrategyImpl proxy deployed at:", address(proxyAdmin));
 
         vm.stopBroadcast();
     }
