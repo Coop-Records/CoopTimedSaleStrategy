@@ -37,10 +37,18 @@ The Royalties contract manages royalty distribution from secondary market sales 
 
 ## Usage
 
-1. Deploy the ZoraTimedSaleStrategy contract.
-2. For each 1155 token sale, call `setSaleV2()` with the appropriate parameters.
-3. Users can mint tokens using the `mint()` function during the sale period.
-4. After the sale ends and meets conditions, call `launchMarket()` to enable secondary trading.
+1. Deploy the CoopTimedSaleStrategyImpl contract using the following command:
+
+   ```
+   forge script script/DeployCoopTimedSaleStrategyImpl.s.sol:DeployCoopTimedSaleStrategyImpl --rpc-url RPC_URL --private-key PRIVATE_KEY --broadcast --verify --etherscan-api-key ETHERSCAN_API_KEY -vvvv
+   ```
+
+   Replace `RPC_URL`, `PRIVATE_KEY`, and `ETHERSCAN_API_KEY` with your actual values.
+
+2. Deploy the CoopTimedSaleStrategy contract.
+3. For each 1155 token sale, call `setSaleV2()` with the appropriate parameters.
+4. Users can mint tokens using the `mint()` function during the sale period.
+5. After the sale ends and meets conditions, call `launchMarket()` to enable secondary trading.
 
 ## Important Functions
 
