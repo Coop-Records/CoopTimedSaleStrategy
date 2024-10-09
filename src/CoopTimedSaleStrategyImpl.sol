@@ -14,7 +14,7 @@ import {IMinter1155} from "@erc20z/interfaces/IMinter1155.sol";
 import {ICreatorCommands} from "@erc20z/interfaces/ICreatorCommands.sol";
 import {IERC20Z} from "@erc20z/interfaces/IERC20Z.sol";
 import {IZora1155} from "@erc20z/interfaces/IZora1155.sol";
-import {ZoraTimedSaleStrategyConstants} from "./ZoraTimedSaleStrategyConstants.sol";
+import {CoopTimedSaleStrategyConstants} from "./CoopTimedSaleStrategyConstants.sol";
 import {ZoraTimedSaleStorageDataLocation} from "@erc20z/storage/ZoraTimedSaleStorageDataLocation.sol";
 import {IUniswapV3SwapCallback} from "@erc20z/interfaces/uniswap/IUniswapV3SwapCallback.sol";
 import {UniswapV3LiquidityCalculator} from "@erc20z/uniswap/UniswapV3LiquidityCalculator.sol";
@@ -43,17 +43,17 @@ import {IUniswapV3Pool} from "@erc20z/interfaces/uniswap/IUniswapV3Pool.sol";
 
 */
 
-/// @title Zora Timed Sale Strategy Impl
+/// @title Coop Timed Sale Strategy Impl
 /// @notice A timed sale strategy for Zora 1155 tokens
 /// @author @isabellasmallcombe @kulkarohan
-contract ZoraTimedSaleStrategyImpl is
+contract CoopTimedSaleStrategyImpl is
     UUPSUpgradeable,
     Ownable2StepUpgradeable,
     ReentrancyGuardUpgradeable,
     IMinter1155,
     IZoraTimedSaleStrategy,
     ZoraTimedSaleStorageDataLocation,
-    ZoraTimedSaleStrategyConstants,
+    CoopTimedSaleStrategyConstants,
     IUniswapV3SwapCallback
 {
     /// @dev This is an upgradeable contract and this variable is at slot0. Do not move this variable.

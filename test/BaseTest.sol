@@ -3,8 +3,8 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
 
-import {ZoraTimedSaleStrategy} from "../src/ZoraTimedSaleStrategy.sol";
-import {ZoraTimedSaleStrategyImpl} from "../src/ZoraTimedSaleStrategyImpl.sol";
+import {CoopTimedSaleStrategy} from "../src/CoopTimedSaleStrategy.sol";
+import {CoopTimedSaleStrategyImpl} from "../src/CoopTimedSaleStrategyImpl.sol";
 
 import {IProtocolRewards} from "@zoralabs/protocol-rewards/src/interfaces/IProtocolRewards.sol";
 import {IWETH} from "@erc20z/interfaces/IWETH.sol";
@@ -69,8 +69,8 @@ contract BaseTest is Test {
     ISwapRouter internal swapRouter;
     ProtocolRewards internal protocolRewards;
     ERC20Z internal erc20zImpl;
-    ZoraTimedSaleStrategyImpl internal saleStrategyImpl;
-    ZoraTimedSaleStrategyImpl internal saleStrategy;
+    CoopTimedSaleStrategyImpl internal saleStrategyImpl;
+    CoopTimedSaleStrategyImpl internal saleStrategy;
     Zora1155 internal collection;
     Royalties internal royalties;
     uint256 internal tokenId;
@@ -97,8 +97,8 @@ contract BaseTest is Test {
         royalties = new Royalties();
         royalties.initialize(weth, nonfungiblePositionManager, users.royaltyFeeRecipient, royaltyFeeBps);
         erc20zImpl = new ERC20Z(royalties);
-        saleStrategyImpl = new ZoraTimedSaleStrategyImpl();
-        saleStrategy = ZoraTimedSaleStrategyImpl(address(new ZoraTimedSaleStrategy(address(saleStrategyImpl))));
+        saleStrategyImpl = new CoopTimedSaleStrategyImpl();
+        saleStrategy = CoopTimedSaleStrategyImpl(address(new CoopTimedSaleStrategy(address(saleStrategyImpl))));
         saleStrategy.initialize(
             users.owner, users.zoraRewardRecipient, address(erc20zImpl), IProtocolRewards(address(protocolRewards))
         );
