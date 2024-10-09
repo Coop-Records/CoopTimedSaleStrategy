@@ -49,47 +49,27 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
         uint256 zoraReward
     );
 
-    event ZoraRewardRecipientUpdated(
-        address indexed prevRecipient,
-        address indexed newRecipient
-    );
+    event ZoraRewardRecipientUpdated(address indexed prevRecipient, address indexed newRecipient);
 
     event MintComment(
-        address indexed sender,
-        address indexed collection,
-        uint256 indexed tokenId,
-        uint256 quantity,
-        string comment
+        address indexed sender, address indexed collection, uint256 indexed tokenId, uint256 quantity, string comment
     );
 
     function setUpSale(uint64 saleStart) public {
-        IZoraTimedSaleStrategy.SalesConfigV2
-            memory salesConfig = IZoraTimedSaleStrategy.SalesConfigV2({
-                saleStart: saleStart,
-                marketCountdown: DEFAULT_MARKET_COUNTDOWN,
-                minimumMarketEth: DEFAULT_MINIMUM_MARKET_ETH,
-                name: "Test",
-                symbol: "TST"
-            });
+        IZoraTimedSaleStrategy.SalesConfigV2 memory salesConfig = IZoraTimedSaleStrategy.SalesConfigV2({
+            saleStart: saleStart,
+            marketCountdown: DEFAULT_MARKET_COUNTDOWN,
+            minimumMarketEth: DEFAULT_MINIMUM_MARKET_ETH,
+            name: "Test",
+            symbol: "TST"
+        });
         vm.prank(users.creator);
         collection.callSale(
-            tokenId,
-            saleStrategy,
-            abi.encodeWithSelector(
-                saleStrategy.setSaleV2.selector,
-                tokenId,
-                salesConfig
-            )
+            tokenId, saleStrategy, abi.encodeWithSelector(saleStrategy.setSaleV2.selector, tokenId, salesConfig)
         );
 
-        vm.label(
-            saleStrategy.sale(address(collection), tokenId).erc20zAddress,
-            "ERC20Z"
-        );
-        vm.label(
-            saleStrategy.sale(address(collection), tokenId).poolAddress,
-            "V3_POOL"
-        );
+        vm.label(saleStrategy.sale(address(collection), tokenId).erc20zAddress, "ERC20Z");
+        vm.label(saleStrategy.sale(address(collection), tokenId).poolAddress, "V3_POOL");
     }
 
     function testZoraTimedContractName() public view {
@@ -97,10 +77,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     }
 
     function testZoraTimedContractUri() public view {
-        assertEq(
-            saleStrategy.contractURI(),
-            "https://github.com/ourzora/zora-protocol/"
-        );
+        assertEq(saleStrategy.contractURI(), "https://github.com/ourzora/zora-protocol/");
     }
 
     function testZoraTimedContractVersion() public view {
@@ -113,9 +90,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     }
 
     function testSupportsInterface() public view {
-        assertTrue(
-            saleStrategy.supportsInterface(type(IMinter1155).interfaceId)
-        );
+        assertTrue(saleStrategy.supportsInterface(type(IMinter1155).interfaceId));
         assertTrue(saleStrategy.supportsInterface(0x6890e5b3));
         assertTrue(saleStrategy.supportsInterface(type(IERC165).interfaceId));
         assertFalse(saleStrategy.supportsInterface(0x0));
@@ -124,29 +99,15 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     function testSetSaleV1() public {
         uint64 saleStart = uint64(block.timestamp);
 
-        IZoraTimedSaleStrategy.SalesConfig
-            memory salesConfig = IZoraTimedSaleStrategy.SalesConfig({
-                saleStart: saleStart,
-                saleEnd: 1 days,
-                name: "Test",
-                symbol: "TST"
-            });
+        IZoraTimedSaleStrategy.SalesConfig memory salesConfig =
+            IZoraTimedSaleStrategy.SalesConfig({saleStart: saleStart, saleEnd: 1 days, name: "Test", symbol: "TST"});
 
         vm.prank(users.creator);
         collection.callSale(
-            tokenId,
-            saleStrategy,
-            abi.encodeWithSelector(
-                saleStrategy.setSale.selector,
-                tokenId,
-                salesConfig
-            )
+            tokenId, saleStrategy, abi.encodeWithSelector(saleStrategy.setSale.selector, tokenId, salesConfig)
         );
 
-        IZoraTimedSaleStrategy.SaleData memory saleData = saleStrategy.saleV2(
-            address(collection),
-            tokenId
-        );
+        IZoraTimedSaleStrategy.SaleData memory saleData = saleStrategy.saleV2(address(collection), tokenId);
 
         assertEq(saleData.saleStart, saleStart);
         assertEq(saleData.saleEnd, 0);
@@ -157,36 +118,23 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
         assertFalse(saleData.secondaryActivated);
     }
 
-    function testZoraTimedSetSale(
-        uint64 fuzzMarketCountdown,
-        uint256 fuzzMinimumMarketEth
-    ) public {
+    function testZoraTimedSetSale(uint64 fuzzMarketCountdown, uint256 fuzzMinimumMarketEth) public {
         vm.assume(fuzzMinimumMarketEth >= 0.0111 ether);
 
-        IZoraTimedSaleStrategy.SalesConfigV2
-            memory salesConfig = IZoraTimedSaleStrategy.SalesConfigV2({
-                saleStart: uint64(block.timestamp),
-                marketCountdown: fuzzMarketCountdown,
-                minimumMarketEth: fuzzMinimumMarketEth,
-                name: "Test",
-                symbol: "TST"
-            });
+        IZoraTimedSaleStrategy.SalesConfigV2 memory salesConfig = IZoraTimedSaleStrategy.SalesConfigV2({
+            saleStart: uint64(block.timestamp),
+            marketCountdown: fuzzMarketCountdown,
+            minimumMarketEth: fuzzMinimumMarketEth,
+            name: "Test",
+            symbol: "TST"
+        });
 
         vm.prank(users.creator);
         collection.callSale(
-            tokenId,
-            saleStrategy,
-            abi.encodeWithSelector(
-                saleStrategy.setSaleV2.selector,
-                tokenId,
-                salesConfig
-            )
+            tokenId, saleStrategy, abi.encodeWithSelector(saleStrategy.setSaleV2.selector, tokenId, salesConfig)
         );
 
-        IZoraTimedSaleStrategy.SaleData memory saleData = saleStrategy.saleV2(
-            address(collection),
-            tokenId
-        );
+        IZoraTimedSaleStrategy.SaleData memory saleData = saleStrategy.saleV2(address(collection), tokenId);
 
         assertEq(saleData.saleStart, salesConfig.saleStart);
         assertEq(saleData.saleEnd, 0);
@@ -204,14 +152,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         vm.expectRevert(abi.encodeWithSignature("WrongValueSent()"));
         vm.prank(users.collector);
-        saleStrategy.mint{value: 1 ether}(
-            users.collector,
-            1,
-            address(collection),
-            tokenId,
-            address(0),
-            ""
-        );
+        saleStrategy.mint{value: 1 ether}(users.collector, 1, address(collection), tokenId, address(0), "");
     }
 
     function testZoraTimedMintWithMintComment() public {
@@ -220,21 +161,8 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
         vm.deal(users.collector, 1 ether);
 
         vm.expectEmit(true, true, true, true);
-        emit MintComment(
-            users.collector,
-            address(collection),
-            tokenId,
-            1,
-            "mint comment"
-        );
-        saleStrategy.mint{value: mintFee}(
-            users.collector,
-            1,
-            address(collection),
-            tokenId,
-            address(0),
-            "mint comment"
-        );
+        emit MintComment(users.collector, address(collection), tokenId, 1, "mint comment");
+        saleStrategy.mint{value: mintFee}(users.collector, 1, address(collection), tokenId, address(0), "mint comment");
     }
 
     function testZoraTimedSaleHasNotStarted() public {
@@ -244,14 +172,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         vm.expectRevert(abi.encodeWithSignature("SaleHasNotStarted()"));
         vm.prank(users.collector);
-        saleStrategy.mint{value: mintFee}(
-            users.collector,
-            1,
-            address(collection),
-            tokenId,
-            address(0),
-            ""
-        );
+        saleStrategy.mint{value: mintFee}(users.collector, 1, address(collection), tokenId, address(0), "");
     }
 
     function testZoraTimedSaleHasEnded() public {
@@ -263,14 +184,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
         vm.deal(users.collector, totalValue);
 
         vm.prank(users.collector);
-        saleStrategy.mint{value: totalValue}(
-            users.collector,
-            numMints,
-            address(collection),
-            tokenId,
-            address(0),
-            ""
-        );
+        saleStrategy.mint{value: totalValue}(users.collector, numMints, address(collection), tokenId, address(0), "");
 
         vm.warp(uint64(block.timestamp) + DEFAULT_MARKET_COUNTDOWN + 1);
 
@@ -278,14 +192,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         vm.expectRevert(abi.encodeWithSignature("SaleV2Ended()"));
         vm.prank(users.collector);
-        saleStrategy.mint{value: totalValue}(
-            users.collector,
-            numMints,
-            address(collection),
-            tokenId,
-            address(0),
-            ""
-        );
+        saleStrategy.mint{value: totalValue}(users.collector, numMints, address(collection), tokenId, address(0), "");
     }
 
     function testSetSaleAlreadySet() public {
@@ -293,10 +200,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         // Test when sale has already been set
         bytes memory errorMessage = abi.encodeWithSignature("SaleAlreadySet()");
-        bytes memory topError = abi.encodeWithSignature(
-            "CallFailed(bytes)",
-            errorMessage
-        );
+        bytes memory topError = abi.encodeWithSignature("CallFailed(bytes)", errorMessage);
         vm.expectRevert(topError);
         setUpSale(uint64(block.timestamp));
     }
@@ -304,21 +208,13 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     function testRevertCannotUpdateSaleAfterStarted() public {
         setUpSale(uint64(block.timestamp));
 
-        IZoraTimedSaleStrategy.SaleData memory sale = saleStrategy.saleV2(
-            address(collection),
-            tokenId
-        );
+        IZoraTimedSaleStrategy.SaleData memory sale = saleStrategy.saleV2(address(collection), tokenId);
 
         assertEq(sale.saleStart, uint64(block.timestamp));
         assertEq(sale.saleEnd, 0);
 
-        bytes memory errorMessage = abi.encodeWithSignature(
-            "SaleV2AlreadyStarted()"
-        );
-        bytes memory topError = abi.encodeWithSignature(
-            "CallFailed(bytes)",
-            errorMessage
-        );
+        bytes memory errorMessage = abi.encodeWithSignature("SaleV2AlreadyStarted()");
+        bytes memory topError = abi.encodeWithSignature("CallFailed(bytes)", errorMessage);
 
         vm.prank(users.creator);
         vm.expectRevert(topError);
@@ -326,10 +222,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
             tokenId,
             saleStrategy,
             abi.encodeWithSelector(
-                saleStrategy.updateSale.selector,
-                tokenId,
-                uint64(block.timestamp),
-                uint64(block.timestamp - 2 days)
+                saleStrategy.updateSale.selector, tokenId, uint64(block.timestamp), uint64(block.timestamp - 2 days)
             )
         );
     }
@@ -337,10 +230,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     function testZoraTimedUpdateSaleStartTime() public {
         setUpSale(uint64(block.timestamp + 1 days));
 
-        IZoraTimedSaleStrategy.SaleData memory sale = saleStrategy.saleV2(
-            address(collection),
-            tokenId
-        );
+        IZoraTimedSaleStrategy.SaleData memory sale = saleStrategy.saleV2(address(collection), tokenId);
 
         assertEq(sale.saleStart, uint64(block.timestamp + 1 days));
 
@@ -365,20 +255,12 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     function testRevertCannotUpdateStartTimeAfterSaleStart() public {
         setUpSale(uint64(block.timestamp));
 
-        IZoraTimedSaleStrategy.SaleData memory sale = saleStrategy.saleV2(
-            address(collection),
-            tokenId
-        );
+        IZoraTimedSaleStrategy.SaleData memory sale = saleStrategy.saleV2(address(collection), tokenId);
 
         assertEq(sale.saleStart, uint64(block.timestamp));
 
-        bytes memory errorMessage = abi.encodeWithSignature(
-            "SaleV2AlreadyStarted()"
-        );
-        bytes memory topError = abi.encodeWithSignature(
-            "CallFailed(bytes)",
-            errorMessage
-        );
+        bytes memory errorMessage = abi.encodeWithSignature("SaleV2AlreadyStarted()");
+        bytes memory topError = abi.encodeWithSignature("CallFailed(bytes)", errorMessage);
 
         vm.prank(users.creator);
         vm.expectRevert(topError);
@@ -386,54 +268,35 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
             tokenId,
             saleStrategy,
             abi.encodeWithSelector(
-                saleStrategy.updateSale.selector,
-                tokenId,
-                uint64(block.timestamp + 1 days),
-                DEFAULT_MARKET_COUNTDOWN
+                saleStrategy.updateSale.selector, tokenId, uint64(block.timestamp + 1 days), DEFAULT_MARKET_COUNTDOWN
             )
         );
     }
 
     function testUpdateSaleWhenSaleNotSet() public {
         bytes memory errorMessage = abi.encodeWithSignature("SaleNotSet()");
-        bytes memory topError = abi.encodeWithSignature(
-            "CallFailed(bytes)",
-            errorMessage
-        );
+        bytes memory topError = abi.encodeWithSignature("CallFailed(bytes)", errorMessage);
 
         vm.expectRevert(topError);
         collection.callSale(
             tokenId,
             saleStrategy,
             abi.encodeWithSelector(
-                saleStrategy.updateSale.selector,
-                tokenId,
-                uint64(block.timestamp),
-                uint64(block.timestamp + 1 hours)
+                saleStrategy.updateSale.selector, tokenId, uint64(block.timestamp), uint64(block.timestamp + 1 hours)
             )
         );
     }
 
     function testZoraTimedMintWhenSaleNotSet() public {
         vm.expectRevert(abi.encodeWithSignature("SaleNotSet()"));
-        saleStrategy.mint{value: mintFee}(
-            users.collector,
-            1,
-            address(collection),
-            tokenId,
-            address(0),
-            ""
-        );
+        saleStrategy.mint{value: mintFee}(users.collector, 1, address(collection), tokenId, address(0), "");
     }
 
     function testZoraTimedMintFlow() public {
         setUpSale(uint64(block.timestamp));
 
-        IZoraTimedSaleStrategy.RewardsSettings memory rewards = saleStrategy
-            .computeRewards(1);
-        address erc20z = saleStrategy
-            .sale(address(collection), tokenId)
-            .erc20zAddress;
+        IZoraTimedSaleStrategy.RewardsSettings memory rewards = saleStrategy.computeRewards(1);
+        address erc20z = saleStrategy.sale(address(collection), tokenId).erc20zAddress;
 
         vm.expectEmit(true, true, true, true);
         emit RewardsDeposit(
@@ -468,14 +331,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         vm.deal(users.collector, 1 ether);
         vm.prank(users.collector);
-        saleStrategy.mint{value: mintFee}(
-            users.collector,
-            1,
-            address(collection),
-            tokenId,
-            users.mintReferral,
-            ""
-        );
+        saleStrategy.mint{value: mintFee}(users.collector, 1, address(collection), tokenId, users.mintReferral, "");
     }
 
     function testFuzzCalculateErc20ActivateRatioAlwaysCorrect(
@@ -499,49 +355,27 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         // mint the tokens using the timed sale strategy
         saleStrategy.mint{value: mintFee * tokensMinted}(
-            users.collector,
-            tokensMinted,
-            address(collection),
-            tokenId,
-            users.mintReferral,
-            ""
+            users.collector, tokensMinted, address(collection), tokenId, users.mintReferral, ""
         );
 
         // now mint some tokens not using the minter
         vm.prank(users.creator);
-        collection.adminMint(
-            users.creator,
-            tokensMintedInOtherMinter,
-            tokenId,
-            ""
-        );
+        collection.adminMint(users.creator, tokensMintedInOtherMinter, tokenId, "");
 
         // we are testing for these expected liquidity ratios: it should be 0.0000111 eth per 1 erc20
-        address tokenAddress = saleStrategy
-            .sale(address(collection), tokenId)
-            .erc20zAddress;
+        address tokenAddress = saleStrategy.sale(address(collection), tokenId).erc20zAddress;
 
-        IZoraTimedSaleStrategy.ERC20zActivate
-            memory activationCalculation = saleStrategy.calculateERC20zActivate(
-                address(collection),
-                tokenId,
-                tokenAddress
-            );
+        IZoraTimedSaleStrategy.ERC20zActivate memory activationCalculation =
+            saleStrategy.calculateERC20zActivate(address(collection), tokenId, tokenAddress);
 
         // make sure that the eth deposited into the erc20 z matches the market reward
-        assertEq(
-            tokenAddress.balance,
-            tokensMinted * 0.0000111 ether,
-            "eth liquidity"
-        );
+        assertEq(tokenAddress.balance, tokensMinted * 0.0000111 ether, "eth liquidity");
 
         // there should be 0.000111 eth for each uint of erc20
         // so ratio looks like:
         // 0.000111 eth / 1 erc20.  so if there is x balance in pool, there should be erc20: x / 0.000111
         assertEq(
-            activationCalculation.erc20Liquidity,
-            (tokenAddress.balance * ONE_ERC20) / 0.000111 ether,
-            "erc20 liquidity"
+            activationCalculation.erc20Liquidity, (tokenAddress.balance * ONE_ERC20) / 0.000111 ether, "erc20 liquidity"
         );
         // make sure total 1155 supply and erc20 supply match
         assertEq(
@@ -624,9 +458,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
         vm.prank(users.creator);
         collection.adminMint(users.creator, 1000, tokenId, "");
 
-        vm.expectRevert(
-            IZoraTimedSaleStrategy.MarketMinimumNotReached.selector
-        );
+        vm.expectRevert(IZoraTimedSaleStrategy.MarketMinimumNotReached.selector);
         saleStrategy.launchMarket(address(collection), tokenId);
     }
 
@@ -634,10 +466,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
         address newRecipient = makeAddr("newRecipient");
 
         vm.expectEmit(true, true, true, true);
-        emit ZoraRewardRecipientUpdated(
-            users.zoraRewardRecipient,
-            newRecipient
-        );
+        emit ZoraRewardRecipientUpdated(users.zoraRewardRecipient, newRecipient);
         vm.prank(users.owner);
         saleStrategy.setZoraRewardRecipient(newRecipient);
     }
@@ -645,12 +474,7 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     function testZoraTimedSetRewardRecipientRevert() public {
         address newRecipient = makeAddr("newRecipient");
 
-        vm.expectRevert(
-            abi.encodeWithSignature(
-                "OwnableUnauthorizedAccount(address)",
-                newRecipient
-            )
-        );
+        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", newRecipient));
         vm.prank(newRecipient);
         saleStrategy.setZoraRewardRecipient(newRecipient);
     }
@@ -662,49 +486,30 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
     }
 
     function testZoraTimedWhenReduceSupplyDoesNotExist() public {
-        Zora1155NoReduceSupply collectionNoReduceSupply = new Zora1155NoReduceSupply(
-                users.creator
-            );
+        Zora1155NoReduceSupply collectionNoReduceSupply = new Zora1155NoReduceSupply(users.creator);
         vm.startPrank(users.creator);
 
-        uint256 token = collectionNoReduceSupply
-            .setupNewTokenWithCreateReferral(
-                "token.uri",
-                type(uint256).max,
-                users.createReferral
-            );
+        uint256 token = collectionNoReduceSupply.setupNewTokenWithCreateReferral(
+            "token.uri", type(uint256).max, users.createReferral
+        );
         collectionNoReduceSupply.addPermission(
-            token,
-            address(saleStrategy),
-            collectionNoReduceSupply.PERMISSION_BIT_MINTER()
+            token, address(saleStrategy), collectionNoReduceSupply.PERMISSION_BIT_MINTER()
         );
 
-        IZoraTimedSaleStrategy.SalesConfigV2
-            memory salesConfig = IZoraTimedSaleStrategy.SalesConfigV2({
-                saleStart: 0,
-                marketCountdown: DEFAULT_MARKET_COUNTDOWN,
-                minimumMarketEth: DEFAULT_MINIMUM_MARKET_ETH,
-                name: "Test",
-                symbol: "TST"
-            });
+        IZoraTimedSaleStrategy.SalesConfigV2 memory salesConfig = IZoraTimedSaleStrategy.SalesConfigV2({
+            saleStart: 0,
+            marketCountdown: DEFAULT_MARKET_COUNTDOWN,
+            minimumMarketEth: DEFAULT_MINIMUM_MARKET_ETH,
+            name: "Test",
+            symbol: "TST"
+        });
 
-        bytes memory errorMessage = abi.encodeWithSignature(
-            "ZoraCreator1155ContractNeedsToSupportReduceSupply()"
-        );
-        bytes memory topError = abi.encodeWithSignature(
-            "CallFailed(bytes)",
-            errorMessage
-        );
+        bytes memory errorMessage = abi.encodeWithSignature("ZoraCreator1155ContractNeedsToSupportReduceSupply()");
+        bytes memory topError = abi.encodeWithSignature("CallFailed(bytes)", errorMessage);
 
         vm.expectRevert(topError);
         collectionNoReduceSupply.callSale(
-            token,
-            saleStrategy,
-            abi.encodeWithSelector(
-                saleStrategy.setSaleV2.selector,
-                token,
-                salesConfig
-            )
+            token, saleStrategy, abi.encodeWithSelector(saleStrategy.setSaleV2.selector, token, salesConfig)
         );
 
         vm.stopPrank();
@@ -722,29 +527,18 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         vm.prank(users.collector);
         saleStrategy.mint{value: totalValue}(
-            users.collector,
-            numTokens,
-            address(collection),
-            tokenId,
-            users.mintReferral,
-            ""
+            users.collector, numTokens, address(collection), tokenId, users.mintReferral, ""
         );
 
         vm.warp(block.timestamp + DEFAULT_MARKET_COUNTDOWN);
 
         saleStrategy.launchMarket(address(collection), tokenId);
 
-        address erc20zAddress = saleStrategy
-            .sale(address(collection), tokenId)
-            .erc20zAddress;
+        address erc20zAddress = saleStrategy.sale(address(collection), tokenId).erc20zAddress;
 
         assertTrue(ERC20Z(payable(erc20zAddress)).totalSupply() >= numTokens);
         assertTrue(collection.getTokenInfo(tokenId).maxSupply >= numTokens);
-        assertTrue(
-            saleStrategy
-                .sale(address(collection), tokenId)
-                .secondaryActivated == true
-        );
+        assertTrue(saleStrategy.sale(address(collection), tokenId).secondaryActivated == true);
     }
 
     function testRevertCannotLaunchMarketUntilMinimumEthIsMet() public {
@@ -766,23 +560,14 @@ contract ZoraTimedSaleStrategyTest is BaseTest {
 
         vm.prank(users.collector);
         saleStrategy.mint{value: totalValue}(
-            users.collector,
-            numTokens,
-            address(collection),
-            tokenId,
-            users.mintReferral,
-            ""
+            users.collector, numTokens, address(collection), tokenId, users.mintReferral, ""
         );
 
         vm.warp(block.timestamp + DEFAULT_MARKET_COUNTDOWN);
 
         saleStrategy.launchMarket(address(collection), tokenId);
 
-        assertTrue(
-            saleStrategy
-                .sale(address(collection), tokenId)
-                .secondaryActivated == true
-        );
+        assertTrue(saleStrategy.sale(address(collection), tokenId).secondaryActivated == true);
 
         // Second Launch Market
         vm.expectRevert(abi.encodeWithSignature("MarketAlreadyLaunched()"));

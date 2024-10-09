@@ -21,7 +21,8 @@ import {Zora1155 as Zora1155NoReduceSupply} from "@erc20z-test/mock/Zora1155NoRe
 import {Royalties} from "@erc20z/royalties/Royalties.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 
-/** // TODO (later) store uniswap deployments in a config file for multichain forking
+/**
+ * // TODO (later) store uniswap deployments in a config file for multichain forking
  *  Zora Mainnet
  * {
  *   "v3CoreFactoryAddress": "0x7145F8aeef1f6510E92164038E1B6F8cB2c42Cbb",
@@ -39,14 +40,10 @@ import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
  * }
  */
 contract BaseTest is Test {
-    address internal constant DEAD_ADDRESS =
-        0x000000000000000000000000000000000000dEaD;
-    address internal constant WETH_ADDRESS =
-        0x4200000000000000000000000000000000000006;
-    address internal constant PROTOCOL_REWARDS =
-        0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B;
-    address internal constant ZORA_1155_FACTORY =
-        0x777777C338d93e2C7adf08D102d45CA7CC4Ed021;
+    address internal constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    address internal constant WETH_ADDRESS = 0x4200000000000000000000000000000000000006;
+    address internal constant PROTOCOL_REWARDS = 0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B;
+    address internal constant ZORA_1155_FACTORY = 0x777777C338d93e2C7adf08D102d45CA7CC4Ed021;
 
     uint256 internal constant mintFee = 0.000111 ether;
     uint256 internal constant royaltyFeeBps = 2500;
@@ -82,9 +79,7 @@ contract BaseTest is Test {
     function setUp() public virtual {
         // TODO (later) support multichain forking, which will require a different address for the nonfungiblePositionManager
         forkId = vm.createSelectFork("zora", 17657267);
-        nonfungiblePositionManager = INonfungiblePositionManager(
-            0xbC91e8DfA3fF18De43853372A3d7dfe585137D78
-        );
+        nonfungiblePositionManager = INonfungiblePositionManager(0xbC91e8DfA3fF18De43853372A3d7dfe585137D78);
         swapRouter = ISwapRouter(0x7De04c96BE5159c3b5CeffC82aa176dc81281557);
         weth = IWETH(WETH_ADDRESS);
 
@@ -100,45 +95,24 @@ contract BaseTest is Test {
         vm.etch(PROTOCOL_REWARDS, address(protocolRewards).code);
 
         royalties = new Royalties();
-        royalties.initialize(
-            weth,
-            nonfungiblePositionManager,
-            users.royaltyFeeRecipient,
-            royaltyFeeBps
-        );
+        royalties.initialize(weth, nonfungiblePositionManager, users.royaltyFeeRecipient, royaltyFeeBps);
         erc20zImpl = new ERC20Z(royalties);
         saleStrategyImpl = new ZoraTimedSaleStrategyImpl();
-        saleStrategy = ZoraTimedSaleStrategyImpl(
-            address(new ZoraTimedSaleStrategy(address(saleStrategyImpl)))
-        );
+        saleStrategy = ZoraTimedSaleStrategyImpl(address(new ZoraTimedSaleStrategy(address(saleStrategyImpl))));
         saleStrategy.initialize(
-            users.owner,
-            users.zoraRewardRecipient,
-            address(erc20zImpl),
-            IProtocolRewards(address(protocolRewards))
+            users.owner, users.zoraRewardRecipient, address(erc20zImpl), IProtocolRewards(address(protocolRewards))
         );
 
         vm.startPrank(users.creator);
 
         collection = new Zora1155(users.creator);
-        tokenId = collection.setupNewTokenWithCreateReferral(
-            "token.uri",
-            type(uint256).max,
-            users.createReferral
-        );
-        collection.addPermission(
-            tokenId,
-            address(saleStrategy),
-            collection.PERMISSION_BIT_MINTER()
-        );
+        tokenId = collection.setupNewTokenWithCreateReferral("token.uri", type(uint256).max, users.createReferral);
+        collection.addPermission(tokenId, address(saleStrategy), collection.PERMISSION_BIT_MINTER());
 
         vm.stopPrank();
 
         vm.label(PROTOCOL_REWARDS, "PROTOCOL_REWARDS");
-        vm.label(
-            address(nonfungiblePositionManager),
-            "NONFUNGIBLE_POSITION_MANAGER"
-        );
+        vm.label(address(nonfungiblePositionManager), "NONFUNGIBLE_POSITION_MANAGER");
         vm.label(address(swapRouter), "SWAP_ROUTER");
         vm.label(address(royalties), "ROYALTIES");
         vm.label(address(saleStrategy), "SALE_STRATEGY");
@@ -148,26 +122,12 @@ contract BaseTest is Test {
     function setUpERC20z() public returns (address) {
         bytes32 salt = keccak256(
             abi.encodePacked(
-                collection,
-                tokenId,
-                msg.sender,
-                block.number,
-                block.prevrandao,
-                block.timestamp,
-                tx.gasprice
+                collection, tokenId, msg.sender, block.number, block.prevrandao, block.timestamp, tx.gasprice
             )
         );
-        address erc20zAddress = Clones.cloneDeterministic(
-            address(erc20zImpl),
-            salt
-        );
+        address erc20zAddress = Clones.cloneDeterministic(address(erc20zImpl), salt);
         vm.prank(users.creator);
-        IERC20Z(erc20zAddress).initialize(
-            address(collection),
-            tokenId,
-            "TestName",
-            "TestSymbol"
-        );
+        IERC20Z(erc20zAddress).initialize(address(collection), tokenId, "TestName", "TestSymbol");
         return erc20zAddress;
     }
 }
