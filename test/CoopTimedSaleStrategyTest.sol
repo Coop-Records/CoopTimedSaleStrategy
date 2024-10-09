@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@erc20z-test/BaseTest.sol";
+import "./BaseTest.sol";
 import {UniswapV3LiquidityCalculator} from "@erc20z/uniswap/UniswapV3LiquidityCalculator.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IMinter1155} from "@erc20z/interfaces/IMinter1155.sol";
 
-contract ZoraTimedSaleStrategyTest is BaseTest {
+contract CoopTimedSaleStrategyTest is BaseTest {
     function setUp() public override {
         super.setUp();
     }
