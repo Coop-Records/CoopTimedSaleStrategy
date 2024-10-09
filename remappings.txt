@@ -1,3 +1,5 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 @zoralabs/protocol-rewards/src/=lib/zora-protocol/packages/protocol-rewards/src/
-
+@zoralabs/shared-contracts/=lib/zora-protocol/packages/shared-contracts/src/
+@zora/=lib/zora-protocol/packages/1155-contracts/src/
+@erc20z/=lib/zora-protocol/packages/erc20z/src/
