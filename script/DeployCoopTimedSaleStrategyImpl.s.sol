@@ -10,10 +10,10 @@ import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.s
 
 contract DeployCoopTimedSaleStrategyImpl is Script {
     function run() public {
-        address defaultOwner = 0x9266F125fb2EcB730D9953b46dE9C32e2Fa83E4a;
-        address zoraRewardRecipient = 0x9266F125fb2EcB730D9953b46dE9C32e2Fa83E4a;
-        address erc20zImpl = 0x6E742921602a5195f6439c8b8b827E85902E1B2D;
-        address protocolRewardsAddress = 0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B;
+        address defaultOwner = vm.envAddress("DEFAULT_OWNER");
+        address zoraRewardRecipient = vm.envAddress("ZORA_REWARD_RECIPIENT");
+        address erc20zImpl = vm.envAddress("ERC20Z_IMPL_ADDRESS");
+        address protocolRewardsAddress = vm.envAddress("PROTOCOL_REWARDS_ADDRESS");
 
         vm.startBroadcast();
 
