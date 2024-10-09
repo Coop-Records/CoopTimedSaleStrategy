@@ -45,7 +45,7 @@ import {IUniswapV3Pool} from "@erc20z/interfaces/uniswap/IUniswapV3Pool.sol";
 
 /// @title Coop Timed Sale Strategy Impl
 /// @notice A timed sale strategy for Zora 1155 tokens
-/// @author @isabellasmallcombe @kulkarohan
+/// @author @sweetman @isabellasmallcombe @kulkarohan
 contract CoopTimedSaleStrategyImpl is
     UUPSUpgradeable,
     Ownable2StepUpgradeable,
