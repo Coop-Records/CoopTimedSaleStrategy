@@ -1,0 +1,3 @@
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@zoralabs/protocol-rewards/src/=lib/zora-protocol/packages/protocol-rewards/src/
+
