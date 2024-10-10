@@ -1,6 +1,6 @@
-# Zora Timed Sale Strategy
+# Coop Timed Sale Strategy
 
-The Zora Timed Sale Strategy introduces a new fixed price minting mechanism and enables secondary sales on Uniswap V3. New tokens minted will have a fixed price of 0.000111 ETH (111 sparks).
+The Coop Timed Sale Strategy introduces a new fixed price minting mechanism and enables secondary sales on Uniswap V3. New tokens minted will have a fixed price of 0.000111 ETH (111 sparks).
 
 ## Key Features
 
@@ -37,10 +37,18 @@ The Royalties contract manages royalty distribution from secondary market sales 
 
 ## Usage
 
-1. Deploy the ZoraTimedSaleStrategy contract.
-2. For each 1155 token sale, call `setSaleV2()` with the appropriate parameters.
-3. Users can mint tokens using the `mint()` function during the sale period.
-4. After the sale ends and meets conditions, call `launchMarket()` to enable secondary trading.
+1. Deploy the CoopTimedSaleStrategyImpl contract using the following command:
+
+   ```
+   forge script script/DeployCoopTimedSaleStrategyImpl.s.sol:DeployCoopTimedSaleStrategyImpl --rpc-url RPC_URL --private-key PRIVATE_KEY --broadcast --verify --etherscan-api-key ETHERSCAN_API_KEY -vvvv
+   ```
+
+   Replace `RPC_URL`, `PRIVATE_KEY`, and `ETHERSCAN_API_KEY` with your actual values.
+
+2. Deploy the CoopTimedSaleStrategy contract, passing the address of the CoopTimedSaleStrategyImpl as the `_logic` parameter.
+3. For each 1155 token sale, call `setSaleV2()` with the appropriate parameters.
+4. Users can mint tokens using the `mint()` function during the sale period.
+5. After the sale ends and meets conditions, call `launchMarket()` to enable secondary trading.
 
 ## Important Functions
 
@@ -48,6 +56,7 @@ The Royalties contract manages royalty distribution from secondary market sales 
 - `updateSale()`: Update an existing sale's parameters.
 - `mint()`: Allow users to mint tokens during the sale.
 - `launchMarket()`: Launch the secondary market after the primary sale ends.
+- `calculateERC20zActivate()`: Calculate the ERC20z activation values.
 
 For detailed information on function parameters and usage, please refer to the contract documentation.
 
@@ -56,5 +65,11 @@ For detailed information on function parameters and usage, please refer to the c
 - Ensure proper access control for admin functions.
 - Verify that the minimum market ETH and market countdown parameters are set appropriately for your use case.
 - Be aware of the fixed minting price and its implications for your token's economics.
+- The contract uses OpenZeppelin's upgradeable contracts pattern. Ensure proper upgrade procedures are followed.
+
+## Contract Structure
+
+- `CoopTimedSaleStrategyImpl.sol`: The main implementation contract containing all the logic for the timed sale strategy.
+- `CoopTimedSaleStrategy.sol`: A proxy contract that delegates calls to the implementation contract, allowing for upgrades.
 
 For more details on implementation, please refer to the contract source code and comments.
