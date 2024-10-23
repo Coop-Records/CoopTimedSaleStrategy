@@ -362,20 +362,20 @@ contract CoopTimedSaleStrategyTest is BaseTest {
         vm.prank(users.creator);
         collection.adminMint(users.creator, tokensMintedInOtherMinter, tokenId, "");
 
-        // we are testing for these expected liquidity ratios: it should be 0.0000111 eth per 1 erc20
+        // we are testing for these expected liquidity ratios: it should be 0.0001 eth per 1 erc20
         address tokenAddress = saleStrategy.sale(address(collection), tokenId).erc20zAddress;
 
         IZoraTimedSaleStrategy.ERC20zActivate memory activationCalculation =
             saleStrategy.calculateERC20zActivate(address(collection), tokenId, tokenAddress);
 
         // make sure that the eth deposited into the erc20 z matches the market reward
-        assertEq(tokenAddress.balance, tokensMinted * 0.0000111 ether, "eth liquidity");
+        assertEq(tokenAddress.balance, tokensMinted * 0.0001 ether, "eth liquidity");
 
-        // there should be 0.000111 eth for each uint of erc20
+        // there should be 0.0001 eth for each uint of erc20
         // so ratio looks like:
-        // 0.000111 eth / 1 erc20.  so if there is x balance in pool, there should be erc20: x / 0.000111
+        // 0.0004 eth / 1 erc20.  so if there is x balance in pool, there should be erc20: x / 0.0004
         assertEq(
-            activationCalculation.erc20Liquidity, (tokenAddress.balance * ONE_ERC20) / 0.000111 ether, "erc20 liquidity"
+            activationCalculation.erc20Liquidity, (tokenAddress.balance * ONE_ERC20) / 0.0004 ether, "erc20 liquidity"
         );
         // make sure total 1155 supply and erc20 supply match
         assertEq(
@@ -383,7 +383,7 @@ contract CoopTimedSaleStrategyTest is BaseTest {
             activationCalculation.final1155Supply * ONE_ERC20,
             "total supply match"
         );
-        // make sure that erc20 liquidity to deposit is one per each 0.0000111 eth
+        // make sure that erc20 liquidity to deposit is one per each 0.0001 eth
     }
 
     // TODO - debug why this is failing with the update to V2
