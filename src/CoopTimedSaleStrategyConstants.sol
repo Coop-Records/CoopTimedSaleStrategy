@@ -41,7 +41,7 @@ contract CoopTimedSaleStrategyConstants {
     ///         as it ensures that a secondary market can always begin with one whole unit.
     uint256 internal constant MARKET_REWARD = 0.0001 ether;
     /// @notice The Zora reward
-    uint256 internal constant ZORA_REWARD = 0.0004 ether;
+    uint256 internal constant ZORA_REWARD = 0.00006 ether;
     /// @notice 1e18
     uint256 internal constant ONE_ERC_20 = 1e18;
 }
