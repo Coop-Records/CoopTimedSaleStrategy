@@ -96,7 +96,6 @@ contract CoopTimedSaleStrategyTest is BaseTest {
         assertFalse(saleStrategy.supportsInterface(0x0));
     }
 
-
     function testZoraTimedSetSale(uint64 fuzzMarketCountdown, uint256 fuzzMinimumMarketEth) public {
         vm.assume(fuzzMinimumMarketEth >= 0.0111 ether);
 
