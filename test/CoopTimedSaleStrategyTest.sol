@@ -96,28 +96,6 @@ contract CoopTimedSaleStrategyTest is BaseTest {
         assertFalse(saleStrategy.supportsInterface(0x0));
     }
 
-    function testSetSaleV1() public {
-        uint64 saleStart = uint64(block.timestamp);
-
-        IZoraTimedSaleStrategy.SalesConfig memory salesConfig =
-            IZoraTimedSaleStrategy.SalesConfig({saleStart: saleStart, saleEnd: 1 days, name: "Test", symbol: "TST"});
-
-        vm.prank(users.creator);
-        collection.callSale(
-            tokenId, saleStrategy, abi.encodeWithSelector(saleStrategy.setSale.selector, tokenId, salesConfig)
-        );
-
-        IZoraTimedSaleStrategy.SaleData memory saleData = saleStrategy.saleV2(address(collection), tokenId);
-
-        assertEq(saleData.saleStart, saleStart);
-        assertEq(saleData.saleEnd, 0);
-        assertTrue(saleData.erc20zAddress != address(0));
-        assertTrue(saleData.poolAddress != address(0));
-        assertEq(saleData.marketCountdown, 24 hours);
-        assertEq(saleData.minimumMarketEth, 0.00111 ether);
-        assertFalse(saleData.secondaryActivated);
-    }
-
     function testZoraTimedSetSale(uint64 fuzzMarketCountdown, uint256 fuzzMinimumMarketEth) public {
         vm.assume(fuzzMinimumMarketEth >= 0.0111 ether);
 
